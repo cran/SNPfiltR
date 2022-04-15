@@ -58,6 +58,16 @@ j=min.distance
 #generate dataframe containing information for chromosome and bp locality of each SNP
 df<-as.data.frame(vcfR@fix[,1:2])
 
+#write test to identify and remove duplicated SNPs in input vcf
+if (length(unique(paste(df$CHROM,df$POS))) < nrow(df)){
+  #remove duplicated SNPs
+  vcfR<-vcfR[!duplicated(paste(df$CHROM,df$POS)),]
+  #report to user
+  message(nrow(df) - length(unique(paste(df$CHROM,df$POS)))," duplicated SNPs removed from input vcf")
+  #regenerate df without duplicate inputs
+  df<-as.data.frame(vcfR@fix[,1:2])
+}
+
 #generate list of all unique chromosomes in alphabetical order
 chroms<-levels(as.factor(df$CHROM))
 
@@ -132,7 +142,36 @@ for (t in chroms){
 close(pb)
 
 #order the dataframe to match the order of the input vcf file
-order.df<-keep.df[match(paste(df$CHROM,df$POS), paste(keep.df$CHROM,keep.df$POS)),]
+#remove scientific notation
+keep.df$POS<-format(keep.df$POS,scientific = FALSE)
+df$POS<-format(df$POS,scientific = FALSE)
+#make sure class matches between the columns you're trying to merge
+keep.df$POS<-as.numeric(as.character(keep.df$POS))
+df$POS<-as.numeric(as.character(df$POS))
+#make sure class matches between the columns you're trying to merge
+keep.df$CHROM<-as.character(keep.df$CHROM)
+df$CHROM<-as.character(df$CHROM)
+#add tracking column
+df$id<-c(1:nrow(df))
+#merge
+order.df<-merge(keep.df,df)
+#order based on tracking column
+order.df<-order.df[order(order.df$id),]
+
+#order.df<-keep.df[match(paste(df$CHROM,format(df$POS,scientific = FALSE)), paste(keep.df$CHROM,format(keep.df$POS,scientific = FALSE))),]
+#note: the position vector must be stripped of scientific notation otherwise identical numbers will not be recognized as matches, giving NA values
+#note: this old approach using match() has been deprecated because there were too many formatting issues causing
+#match to not be able to correctly match the order between 'df' and 'keep.df'. Now we use merge() which seems to be more robust
+
+#write a test to catch if this internal dataset is not able to merge correctly
+if (sum(is.na(order.df)) > .5){
+  stop("internal error with the merge function. Please email a copy of your input vcf to devonderaad@gmail.com for a bug fix")
+}
+
+#write a test to catch if this internal dataset is not able to merge correctly
+if (sum(order.df$id != c(1:nrow(df))) > .5){
+  stop("internal error with the merge function. Please email a copy of your input vcf to devonderaad@gmail.com for a bug fix")
+}
 
 #subset vcfR locus info based on the logical column from our dataframe
 #vcfR@fix<-vcfR@fix[order.df$keep,]

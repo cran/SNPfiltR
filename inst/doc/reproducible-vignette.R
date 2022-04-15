@@ -66,6 +66,7 @@ missing_by_snp(vcfR)
 ## -----------------------------------------------------------------------------
 #assess missing data effects on clustering
 assess_missing_data_pca(vcfR = vcfR, popmap = popmap, thresholds = c(.8), clustering = FALSE)
+assess_missing_data_tsne(vcfR = vcfR, popmap = popmap, thresholds = c(.8), clustering = FALSE)
 
 ## ---- fig.height= 3, fig.width=4----------------------------------------------
 #show me the samples with the most missing data at an 80% completeness threshold
@@ -83,11 +84,19 @@ vcfR
 popmap<-popmap[popmap$id %in% colnames(vcfR@gt)[-1],]
 
 ## ---- fig.height= 3, fig.width=4----------------------------------------------
+#visualize missing data at various completeness thresholds
 missing_by_snp(vcfR)
 #all samples look good at most thresholds, because of the small size of this dataset, I will choose a 60% completeness threshold in order to retain as many SNPs as possible
 
 #filter vcfR
 vcfR<-missing_by_snp(vcfR, cutoff = .6)
+
+## -----------------------------------------------------------------------------
+#remove singletons (loci with only a single variant allele which have no phylogenetic signal)
+vcfR<-min_mac(vcfR = vcfR, min.mac = 2)
+
+#linkage filter vcf to thin SNPs to one per 500bp
+vcfR<-distance_thin(vcfR, min.distance = 500)
 
 #look at final stats for our filtered vcf file
 vcfR

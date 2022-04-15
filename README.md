@@ -7,24 +7,31 @@
 
 ![CRAN-status](https://www.r-pkg.org/badges/version-last-release/SNPfiltR)
 ![CRAN-Downloads](https://cranlogs.r-pkg.org/badges/grand-total/SNPfiltR)
+[![DOI](https://zenodo.org/badge/397722868.svg)](https://zenodo.org/badge/latestdoi/397722868)
 ![License](https://img.shields.io/badge/license-MIT-red.svg)
 <!-- badges: end -->
 
-SNPfiltR is a package to streamline and automate the process of choosing
-appropriate filtering parameters for next-gen SNP datasets. The package
-was designed with RADseq (Restriction-site Associated DNA sequencing)
-data in mind, but can be used on any SNP dataset in need of data
-exploration and quality filtering (e.g., UCEs, sequence capture, GBS).
-SNPfiltR shines when used on moderate sized reduced-representation
-genomic datasets, where SNP datasets can be rapidly explored across an
-array of quality and completeness parameters via an interactive Rstudio
-window.
+SNPfiltR is an R package to streamline and automate the process of
+choosing appropriate filtering parameters for next-gen SNP datasets. The
+package was designed with RADseq (Restriction-site Associated DNA
+sequencing) data in mind, but can be used on any SNP dataset in need of
+data exploration and quality filtering (e.g., whole genome resequencing,
+UCEs, sequence capture, GBS). SNPfiltR shines when used on moderate
+sized reduced-representation genomic datasets, where an array of quality
+and completeness parameters can be rapidly explored in a single,
+interactive Rstudio session. SNPfiltR is available from both
+[CRAN](https://CRAN.R-project.org/package=SNPfiltR) and
+[GitHub](https://github.com/DevonDeRaad/SNPfiltR).
 
 ## Installation
 
 ``` r
 #Install current release from CRAN
 install.packages("SNPfiltR")
+
+#Install current development version directly from GitHub
+library(devtools)
+install_github("DevonDeRaad/SNPfiltR")
 ```
 
 ## Citation
@@ -32,18 +39,18 @@ install.packages("SNPfiltR")
 If you are using SNPfiltR to investigate and filter your SNP dataset, I
 recommend citing both SNPfiltR and the R package vcfR (which is used to
 read in vcf files as ‘vcfR’ objects, and heavily used inside of SNPfiltR
-functions) e.g., “We used the R packages *SNPfiltR* (DeRaad, 2021) and
+functions) e.g., “We used the R packages *SNPfiltR* (DeRaad, 2022) and
 *vcfR* (Knaus and Grunwald, 2017) to iteratively filter our SNP dataset
 based on various quality and completeness metrics.”
 
-DeRaad, D.A. 2021. SNPfiltR: an R package for interactive and
-reproducible SNP filtering. Preprint on Authorea.
-<http://dx.doi.org/10.22541/au.163976415.53888836/v1>
+DeRaad, D.A. (2022), SNPfiltR: an R package for interactive and
+reproducible SNP filtering. Molecular Ecology Resources, 00, 1–15.
+<https://doi.org/10.1111/1755-0998.13618>.
 
 Knaus, Brian J., and Niklaus J. Grunwald. 2017. VCFR: a package to
 manipulate and visualize variant call format data in R. Molecular
 Ecology Resources 17(1):44-53.
-<http://dx.doi.org/10.1111/1755-0998.12549>.
+<https://doi.org/10.1111/1755-0998.12549>.
 
 ## Full documentation
 
@@ -60,20 +67,20 @@ simply follow the example pipeline executed below:
 
 Do quality control per sample before performing SNP calling. I have
 written an [RMarkdown
-script](https://github.com/DevonDeRaad/RADstackshelpR/blob/master/inst/extdata/fastqcr.Rmd)
-that uses the R package [fastqcr](https://github.com/kassambara/fastqcr)
-to generate a report visualizing the quality and quantity of sequencing
-for each sample, and recommending a subset of samples to be immediately
-dropped before parameter optimization (specifically useful for RADseq
-data). The only modification necessary for this script is the path to
-the folder containing the input .fastq.gz files and the path to your
-desired output folder. An example report generated using this script can
-be seen
+script](https://github.com/DevonDeRaad/SNPfiltR/blob/master/inst/extdata/fastqcr.Rmd)
+which is distributed with this package, and uses the R package
+[fastqcr](https://github.com/kassambara/fastqcr) to generate a report
+visualizing the quality and quantity of sequencing for each sample, and
+recommending a subset of samples to be immediately dropped before
+parameter optimization (specifically useful for RADseq data). The only
+modification necessary for this script is the path to the folder
+containing the input .fastq.gz files and the path to your desired output
+folder. An example report generated using this script can be seen
 [here](https://devonderaad.github.io/RADstackshelpR/articles/quality.control.vignette.html).
 Because the fastq.gz files for your experiment may be large and handled
 remotely, an example bash script for executing this RMarkdown file as a
-job on a high performance computing cluster is available
-[here](https://github.com/DevonDeRaad/RADstackshelpR/blob/master/inst/extdata/RMarkdown.qc.submit.script.sh).
+job on a high performance computing cluster is also included
+[here](https://github.com/DevonDeRaad/SNPfiltR/blob/master/inst/extdata/RMarkdown.qc.submit.script.sh).
 
 #### Because this dataset was not overly large, and I used a reference based assembly that doesn’t depend on each sample contributing to the de novo building of RAD loci, I chose to skip this step and do all of the per sample quality filtering in R. I started below by reading in the vcf file using the aforementioned vcfR package. This example uses a subset proportion of a real vcf file in order to control runtimes. The full analysis of this dataset can be viewed [here](https://devonderaad.github.io/SNPfiltR/articles/scrub-jay-RADseq-vignette.html)
 
@@ -83,6 +90,15 @@ job on a high performance computing cluster is available
 
 ``` r
 library(SNPfiltR)
+#> This is SNPfiltR v.0.1.1
+#> 
+#> Detailed usage information is available at: devonderaad.github.io/SNPfiltR/ 
+#> 
+#> If you use SNPfiltR in your published work, please cite the following papers: 
+#> 
+#> DeRaad, D.A. 2021. SNPfiltR: an R package for interactive and reproducible SNP filtering. Preprint on Authorea. <http://dx.doi.org/10.22541/au.163976415.53888836/v1> 
+#> 
+#> Knaus, Brian J., and Niklaus J. Grunwald. 2017. VCFR: a package to manipulate and visualize variant call format data in R. Molecular Ecology Resources 17.1:44-53. http://dx.doi.org/10.1111/1755-0998.12549.
 library(vcfR)
 #> 
 #>    *****       ***   vcfR   ***       *****
@@ -131,7 +147,7 @@ accurate. VCFtools has faster implementations of some of the same
 filters implemented here, and really shines with large datasets. The
 R-based implementations of these filters in SNPfiltR offers interactive
 visualization in a cohesive R-based pipeline, but be aware that reading
-in excessively large files to Rstudio (typically, &gt; 1 Gb in my
+in excessively large files to Rstudio (typically, \> 1 Gb in my
 experience) can cause R to hang and crash. Luckily, I have found that
 variant sites only vcf files for most reduced-representation genomic
 datasets are under this size, and can be handled efficiently using
@@ -152,12 +168,15 @@ filters like allele balance and max depth, here in R using SNPfiltR.
 ``` r
 #visualize distributions
 hard_filter(vcfR=vcfR)
-#> [1] "no depth cutoff provided, exploratory visualization will be generated."
+#> no depth cutoff provided, exploratory visualization will be generated.
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-5-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
-    #> [1] "no genotype quality cutoff provided, exploratory visualization will be generated."
+    #> no genotype quality cutoff provided, exploratory visualization will be generated.
+
+<img src="man/figures/README-unnamed-chunk-5-2.png" width="100%" /><img src="man/figures/README-unnamed-chunk-5-3.png" width="100%" />
+
     #> ***** Object of Class vcfR *****
     #> 20 samples
     #> 71 CHROMs
@@ -168,10 +187,8 @@ hard_filter(vcfR=vcfR)
 
     #hard filter to minimum depth of 5, and minimum genotype quality of 30
     vcfR<-hard_filter(vcfR=vcfR, depth = 5, gq = 30)
-    #> [1] "27.3% of genotypes fall below a read depth of 5 and were converted to NA"
-    #> [1] "3.5% of genotypes fall below a genotype quality of 30 and were converted to NA"
-
-<img src="man/figures/README-unnamed-chunk-5-3.png" width="100%" />
+    #> 27.3% of genotypes fall below a read depth of 5 and were converted to NA
+    #> 3.5% of genotypes fall below a genotype quality of 30 and were converted to NA
 
 #### Then use this function to filter for allele balance
 
@@ -187,7 +204,7 @@ loci) should be close to 0.5”
 ``` r
 #execute allele balance filter
 vcfR<-filter_allele_balance(vcfR)
-#> [1] "7.66% of het genotypes (0.66% of all genotypes) fall outside of .25 - .75 allele balance and were converted to NA"
+#> 7.66% of het genotypes (0.66% of all genotypes) fall outside of 0.25 - 0.75 allele balance ratio and were converted to NA
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
@@ -207,18 +224,23 @@ loci.
 ``` r
 #visualize and pick appropriate max depth cutoff
 max_depth(vcfR)
-#> [1] "cutoff is not specified, exploratory visualization will be generated."
+#> cutoff is not specified, exploratory visualization will be generated.
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
-    #> [1] "dashed line indicates a mean depth across all SNPs of 68.3"
-    #filter vcf by the max depth cutoff you chose
-    vcfR<-max_depth(vcfR, maxdepth = 100)
-    #> [1] "maxdepth cutoff is specified, filtered vcfR object will be returned"
-    #> [1] "19.33% of SNPs were above a mean depth of 100 and were removed from the vcf"
+    #> dashed line indicates a mean depth across all SNPs of 68.3
 
 <img src="man/figures/README-unnamed-chunk-7-2.png" width="100%" />
+
+``` r
+#filter vcf by the max depth cutoff you chose
+vcfR<-max_depth(vcfR, maxdepth = 100)
+#> maxdepth cutoff is specified, filtered vcfR object will be returned
+#> 19.33% of SNPs were above a mean depth of 100 and were removed from the vcf
+```
+
+<img src="man/figures/README-unnamed-chunk-7-3.png" width="100%" />
 
 #### Note:
 
@@ -271,37 +293,37 @@ missing_by_sample(vcfR=vcfR, popmap = popmap)
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" /><img src="man/figures/README-unnamed-chunk-9-3.png" width="100%" />
-\#\#\#\# Now we can try setting a reasonable threshold, and then
-visualizing clustering patterns to determine whether there are still
-problematic samples with excess missing data that can’t be accurately
-assigned to genetic clusters
+#### Now we can try setting a reasonable threshold, and then visualizing
+clustering patterns to determine whether there are still problematic
+samples with excess missing data that can’t be accurately assigned to
+genetic clusters
 
 ``` r
 #run function to drop samples above the threshold we want from the vcf
 vcfR<-missing_by_sample(vcfR=vcfR, cutoff = .9)
+#> 1 samples are above a 0.9 missing data cutoff, and were removed from VCF
 ```
 
 <img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
-    #> [1] "1 samples are above a 0.9 missing data cutoff, and were removed from VCF"
-    #subset popmap to only include retained individuals
-    popmap<-popmap[popmap$id %in% colnames(vcfR@gt),]
+``` r
+#subset popmap to only include retained individuals
+popmap<-popmap[popmap$id %in% colnames(vcfR@gt),]
 
-    #remove invariant sites generated by dropping individuals
-    vcfR<-min_mac(vcfR, min.mac = 1)
+#remove invariant sites generated by dropping individuals
+vcfR<-min_mac(vcfR, min.mac = 1)
+#> 50.23% of SNPs fell below a minor allele count of 1 and were removed from the VCF
+```
 
 <img src="man/figures/README-unnamed-chunk-10-2.png" width="100%" />
 
-    #> [1] "50.23% of SNPs fell below a minor allele count of 1 and were removed from the VCF"
-
-    #verify that missing data is not driving clustering patterns among the retained samples
-    miss<-assess_missing_data_pca(vcfR=vcfR, popmap = popmap, thresholds = .8, clustering = FALSE)
-    #> [1] "cutoff is specified, filtered vcfR object will be returned"
-    #> [1] "69.26% of SNPs fell below a completeness cutoff of 0.8 and were removed from the VCF"
-    #> Loading required namespace: adegenet
-    #> Registered S3 method overwritten by 'spdep':
-    #>   method   from
-    #>   plot.mst ape
+``` r
+#verify that missing data is not driving clustering patterns among the retained samples
+miss<-assess_missing_data_pca(vcfR=vcfR, popmap = popmap, thresholds = .8, clustering = FALSE)
+#> cutoff is specified, filtered vcfR object will be returned
+#> 69.26% of SNPs fell below a completeness cutoff of 0.8 and were removed from the VCF
+#> Loading required namespace: adegenet
+```
 
 <img src="man/figures/README-unnamed-chunk-10-3.png" width="100%" /><img src="man/figures/README-unnamed-chunk-10-4.png" width="100%" /><img src="man/figures/README-unnamed-chunk-10-5.png" width="100%" />
 
@@ -324,7 +346,7 @@ above 50% missing data after applying a per-SNP missing data cutoff. So
 if we are retaining specific low data samples out of necessity or
 project design, we may have to set a more stringent per-SNP missing data
 cutoff, at the expense of the total number of SNPs retained for
-downstream analyses. We can again use the assess\_missing\_data\_pca()
+downstream analyses. We can again use the assess_missing_data_pca()
 function to determine whether all retained samples contain enough data
 at our chosen cutoff in order to be assigned accurately to their species
 group.
@@ -332,7 +354,7 @@ group.
 ``` r
 #visualize missing data by SNP and the effect of various cutoffs on the missingness of each sample
 missing_by_snp(vcfR)
-#> [1] "cutoff is not specified, exploratory visualizations will be generated"
+#> cutoff is not specified, exploratory visualizations will be generated
 #> Picking joint bandwidth of 0.128
 ```
 
@@ -353,49 +375,47 @@ missing_by_snp(vcfR)
 
     #verify that missing data is not driving clustering patterns among the retained samples at some reasonable thresholds
     miss<-assess_missing_data_pca(vcfR=vcfR, popmap = popmap, thresholds = c(.7,.8,.85), clustering = FALSE)
-    #> [1] "cutoff is specified, filtered vcfR object will be returned"
+    #> cutoff is specified, filtered vcfR object will be returned
+    #> 58.43% of SNPs fell below a completeness cutoff of 0.7 and were removed from the VCF
 
-<img src="man/figures/README-unnamed-chunk-11-3.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-3.png" width="100%" /><img src="man/figures/README-unnamed-chunk-11-4.png" width="100%" />
 
-    #> [1] "58.43% of SNPs fell below a completeness cutoff of 0.7 and were removed from the VCF"
+    #> cutoff is specified, filtered vcfR object will be returned
 
-<img src="man/figures/README-unnamed-chunk-11-4.png" width="100%" /><img src="man/figures/README-unnamed-chunk-11-5.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-5.png" width="100%" />
 
-    #> [1] "cutoff is specified, filtered vcfR object will be returned"
+    #> 69.26% of SNPs fell below a completeness cutoff of 0.8 and were removed from the VCF
 
-<img src="man/figures/README-unnamed-chunk-11-6.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-6.png" width="100%" /><img src="man/figures/README-unnamed-chunk-11-7.png" width="100%" />
 
-    #> [1] "69.26% of SNPs fell below a completeness cutoff of 0.8 and were removed from the VCF"
+    #> cutoff is specified, filtered vcfR object will be returned
 
-<img src="man/figures/README-unnamed-chunk-11-7.png" width="100%" /><img src="man/figures/README-unnamed-chunk-11-8.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-8.png" width="100%" />
 
-    #> [1] "cutoff is specified, filtered vcfR object will be returned"
+    #> 75.2% of SNPs fell below a completeness cutoff of 0.85 and were removed from the VCF
 
-<img src="man/figures/README-unnamed-chunk-11-9.png" width="100%" />
-
-    #> [1] "75.2% of SNPs fell below a completeness cutoff of 0.85 and were removed from the VCF"
-
-<img src="man/figures/README-unnamed-chunk-11-10.png" width="100%" /><img src="man/figures/README-unnamed-chunk-11-11.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-9.png" width="100%" /><img src="man/figures/README-unnamed-chunk-11-10.png" width="100%" /><img src="man/figures/README-unnamed-chunk-11-11.png" width="100%" />
 
 ``` r
 #choose a value that retains an acceptable amount of missing data in each sample, and maximizes SNPs retained while minimizing overall missing data, and filter vcf
 vcfR<-missing_by_snp(vcfR, cutoff = .85)
-#> [1] "cutoff is specified, filtered vcfR object will be returned"
+#> cutoff is specified, filtered vcfR object will be returned
+#> 75.2% of SNPs fell below a completeness cutoff of 0.85 and were removed from the VCF
 ```
 
 <img src="man/figures/README-unnamed-chunk-11-12.png" width="100%" />
 
-    #> [1] "75.2% of SNPs fell below a completeness cutoff of 0.85 and were removed from the VCF"
-
-    #check how many SNPs and samples are left
-    vcfR
-    #> ***** Object of Class vcfR *****
-    #> 19 samples
-    #> 34 CHROMs
-    #> 7,555 variants
-    #> Object size: 14.3 Mb
-    #> 4.617 percent missing data
-    #> *****        *****         *****
+``` r
+#check how many SNPs and samples are left
+vcfR
+#> ***** Object of Class vcfR *****
+#> 19 samples
+#> 34 CHROMs
+#> 7,555 variants
+#> Object size: 14.3 Mb
+#> 4.617 percent missing data
+#> *****        *****         *****
+```
 
 ### Step 5:
 
@@ -413,7 +433,7 @@ reduced‐representation library preparation methods), it is preferable to
 filter by the count (rather than frequency) of the minor allele, because
 variation in the amount of missing data across an alignment will cause a
 static frequency cutoff to remove different SFS classes at different
-sites”"
+sites””
 
 #### Our package contains a convenient wrapper functions that can filter based on minor allele count (MAC) and streamline investigation of the effects of various filtering parameters on sample clustering patterns.
 
@@ -421,14 +441,15 @@ sites”"
 #investigate clustering patterns with and without a minor allele cutoff
 #use min.mac() to investigate the effect of multiple cutoffs
 vcfR.mac<-min_mac(vcfR = vcfR, min.mac = 2)
+#> 39.21% of SNPs fell below a minor allele count of 2 and were removed from the VCF
 ```
 
 <img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
-    #> [1] "39.21% of SNPs fell below a minor allele count of 2 and were removed from the VCF"
-
-    #assess clustering without MAC cutoff
-    miss<-assess_missing_data_tsne(vcfR, popmap, clustering = FALSE)
+``` r
+#assess clustering without MAC cutoff
+miss<-assess_missing_data_tsne(vcfR, popmap, clustering = FALSE)
+```
 
 <img src="man/figures/README-unnamed-chunk-12-2.png" width="100%" /><img src="man/figures/README-unnamed-chunk-12-3.png" width="100%" />
 
@@ -467,7 +488,7 @@ heatmap.bp(gq, rlabels = FALSE)
 
 #### Write out vcf files for downstream analyses.
 
-#### Optionally, we can use the distance\_thin() function from the SNPfiltR package in order to filter our SNPs to a minimum distance between SNPs, in order to get a set of unlinked SNPs for downsteam analyses
+#### Optionally, we can use the distance_thin() function from the SNPfiltR package in order to filter our SNPs to a minimum distance between SNPs, in order to get a set of unlinked SNPs for downsteam analyses
 
 #### Note:
 
@@ -483,7 +504,7 @@ vcfR::write.vcf(vcfR, "~/Downloads/aphelocoma.filtered.vcf.gz")
 #linkage filter vcf to thin SNPs to one per 500bp
 vcfR.thin<-distance_thin(vcfR, min.distance = 500)
 #>   |                                                                              |                                                                      |   0%  |                                                                              |==                                                                    |   3%  |                                                                              |====                                                                  |   6%  |                                                                              |======                                                                |   9%  |                                                                              |========                                                              |  12%  |                                                                              |==========                                                            |  15%  |                                                                              |============                                                          |  18%  |                                                                              |==============                                                        |  21%  |                                                                              |================                                                      |  24%  |                                                                              |===================                                                   |  26%  |                                                                              |=====================                                                 |  29%  |                                                                              |=======================                                               |  32%  |                                                                              |=========================                                             |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |=============================                                         |  41%  |                                                                              |===============================                                       |  44%  |                                                                              |=================================                                     |  47%  |                                                                              |===================================                                   |  50%  |                                                                              |=====================================                                 |  53%  |                                                                              |=======================================                               |  56%  |                                                                              |=========================================                             |  59%  |                                                                              |===========================================                           |  62%  |                                                                              |=============================================                         |  65%  |                                                                              |===============================================                       |  68%  |                                                                              |=================================================                     |  71%  |                                                                              |===================================================                   |  74%  |                                                                              |======================================================                |  76%  |                                                                              |========================================================              |  79%  |                                                                              |==========================================================            |  82%  |                                                                              |============================================================          |  85%  |                                                                              |==============================================================        |  88%  |                                                                              |================================================================      |  91%  |                                                                              |==================================================================    |  94%  |                                                                              |====================================================================  |  97%  |                                                                              |======================================================================| 100%
-#> [1] "2550 out of 7555 input SNPs were not located within 500 base-pairs of another SNP and were retained despite filtering"
+#> 2550 out of 7555 input SNPs were not located within 500 base-pairs of another SNP and were retained despite filtering
 
 #write out thinned vcf
 #vcfR::write.vcf(vcfR.thin, "~/Downloads/aphelocoma.filtered.thinned.vcf.gz")
