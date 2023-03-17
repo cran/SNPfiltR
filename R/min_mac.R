@@ -22,8 +22,13 @@ min_mac <- function(vcfR,
                     min.mac=NULL){
 
   #if vcfR is not class vcfR, fail gracefully
-  if (class(vcfR) != "vcfR"){
+  if (!inherits(vcfR, what = "vcfR")){
     stop("specified vcfR object must be of class 'vcfR'")
+  }
+
+  #if all input SNPs are not bi-allelic, minor allele count can't be calculated accurately, let user know
+  if (max(nchar(gsub(",","",vcfR@fix[,"ALT"])),na.rm=T) > 1){
+    stop("Input vcf contains SNPs with > 2 alleles. MAC is calculated under a strict assumption that a single SNP can only possess two alleles. Please use 'filter_biallelic(vcfR)' to remove multi-allelic sites before implementing a MAC filter.")
   }
 
   if (is.null(min.mac)){
@@ -33,10 +38,18 @@ min_mac <- function(vcfR,
 
     #convert vcfR to matrix and make numeric
     gt.matrix<-vcfR::extract.gt(vcfR)
+    missingness.og<-sum(is.na(gt.matrix)) #store missingness
     gt.matrix[gt.matrix == "0/0"]<-0
     gt.matrix[gt.matrix == "0/1"]<-1
+    gt.matrix[gt.matrix == "1/0"]<-1
     gt.matrix[gt.matrix == "1/1"]<-2
     class(gt.matrix) <- "numeric"
+    missingness.new<-sum(is.na(gt.matrix)) #store missingness after the conversion
+
+    #if unrecognized genotype values were present throw an error
+    if (missingness.og != missingness.new){
+      stop("Unrecognized genotype values in input vcf. Only allowed non-missing genotype inputs are '0/0','0/1','1/0','1/1'.")
+    }
 
     #calc sfs
     sfs<-rowSums(gt.matrix, na.rm = TRUE)
@@ -61,7 +74,7 @@ min_mac <- function(vcfR,
   else{
 
     #if specified min.mac is not numeric, fail gracefully
-    if (class(min.mac) != "numeric"){
+    if (!inherits(min.mac, what = "numeric")){
       stop("specified min.mac must be numeric")
     }
 

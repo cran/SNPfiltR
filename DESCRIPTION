@@ -1,6 +1,6 @@
 Package: SNPfiltR
 Title: Interactively Filter SNP Datasets
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: person(given = "Devon",
            family = "DeRaad",
            role = c("aut", "cre"),
@@ -22,15 +22,15 @@ Description: Is designed to interactively and reproducibly visualize and filter 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Imports: vcfR, ggplot2, Rtsne, cluster, adegenet, gridExtra, ggridges,
         stats, graphics, utils
 Depends: R (>= 2.10)
 Suggests: rmarkdown, knitr
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2022-04-15 15:49:27 UTC; devder
+Packaged: 2023-03-17 16:20:15 UTC; devder
 Author: Devon DeRaad [aut, cre] (<https://orcid.org/0000-0003-3105-985X>)
 Maintainer: Devon DeRaad <devonderaad@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-04-16 00:32:39 UTC
+Date/Publication: 2023-03-17 16:40:02 UTC
