@@ -70,7 +70,7 @@ assess_missing_data_tsne(vcfR = vcfR, popmap = popmap, thresholds = c(.8), clust
 
 ## ---- fig.height= 3, fig.width=4----------------------------------------------
 #show me the samples with the most missing data at an 80% completeness threshold
-filt<-miss[miss$filt == .8,]
+filt<-miss$missing.by.filter[miss$missing.by.filter$filt == .8,]
 filt[order(filt$snps.retained),]
 
 #drop the three samples with an excess of missing data at an 80% SNP completeness threshold
